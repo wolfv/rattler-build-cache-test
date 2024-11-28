@@ -1,0 +1,47 @@
+recipe:
+  name: calculator
+  version: 1.0.0
+
+source:
+  path: ../
+
+cache:
+  requirements:
+    build:
+      - ${{ compiler('cxx') }}
+      - cmake
+      - ninja
+  build:
+    script:
+      - mkdir /tmp/build
+      - cd /tmp/build
+      - cmake $SRC_DIR -GNinja -DCMAKE_INSTALL_PREFIX=$PREFIX
+      - ninja install
+
+outputs:
+  # this first output will include all files installed during the cache build
+  - package:
+      name: libcalculator
+
+    requirements:
+      run_exports:
+        - ${{ pin_subpackage('libcalculator') }}
+
+  - package:
+      name: py-calculator
+
+    requirements:
+      build:
+        - ${{ compiler('cxx') }}
+        - cmake
+        - ninja
+      host:
+        - pybind11
+        - python
+        - libcalculator
+
+    build:
+      script:
+        - cd /tmp/build
+        - cmake $SRC_DIR -GNinja -DCMAKE_INSTALL_PREFIX=$PREFIX -DBUILD_PYTHON_BINDINGS=ON
+        - ninja install
