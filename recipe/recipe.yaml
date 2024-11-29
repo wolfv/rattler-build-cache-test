@@ -13,9 +13,11 @@ cache:
       - ninja
   build:
     script:
-      - mkdir /tmp/build
-      - cd /tmp/build
-      - cmake $SRC_DIR -GNinja -DCMAKE_INSTALL_PREFIX=$PREFIX
+      # make sure that `alternative_name.md` is not present
+      - test ! -f ./alternative_name.md
+      - mkdir build
+      - cd build
+      - cmake $SRC_DIR -GNinja ${CMAKE_ARGS}
       - ninja install
 
 outputs:
@@ -29,7 +31,9 @@ outputs:
 
   - package:
       name: py-calculator
-
+    source:
+      - path: ../README.md
+        file_name: alternative_name.md
     requirements:
       build:
         - ${{ compiler('cxx') }}
@@ -42,6 +46,8 @@ outputs:
 
     build:
       script:
-        - cd /tmp/build
-        - cmake $SRC_DIR -GNinja -DCMAKE_INSTALL_PREFIX=$PREFIX -DBUILD_PYTHON_BINDINGS=ON
+        # assert that the README.md file is present
+        - test -f ./alternative_name.md
+        - cd build
+        - cmake $SRC_DIR -GNinja ${CMAKE_ARGS} -DBUILD_PYTHON_BINDINGS=ON
         - ninja install
