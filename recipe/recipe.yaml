@@ -2,10 +2,10 @@ recipe:
   name: calculator
   version: 1.0.0
 
-source:
-  path: ../
-
 cache:
+  source:
+    path: ../
+
   requirements:
     build:
       - ${{ compiler('cxx') }}
@@ -34,6 +34,7 @@ outputs:
     source:
       - path: ../README.md
         file_name: alternative_name.md
+
     requirements:
       build:
         - ${{ compiler('cxx') }}
